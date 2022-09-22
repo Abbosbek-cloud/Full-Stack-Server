@@ -13,6 +13,12 @@ router
       res.send(result);
     });
   })
+  .get("/users/:id", async (req, res) => {
+    const _id = req.params.id;
+    let user = await UsersModel.find({ _id });
+
+    res.send({ message: "User", data: user[0] });
+  })
   .post("/users", async (req, res) => {
     const { name, email, password } = req.body;
     const users = new UsersModel({
