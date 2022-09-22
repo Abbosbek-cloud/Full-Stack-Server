@@ -1,6 +1,7 @@
 const UsersModel = require("../models/Users");
 const bcrypt = require("bcryptjs");
 const { signToken } = require("../utils/auth");
+const UserModel = require("../models/Users");
 
 async function getAllUser(req, res) {
   UsersModel.find({}, (err, result) => {
@@ -43,41 +44,47 @@ async function signIn(req, res) {
     }
   } else {
     res.status(400).send({
-      message: "Login or password i not full!",
+      message: "Login or password is not full!",
     });
   }
 }
 
-async function postUser(req, res) {
+async function signUp(req, res) {
+  let existUser = null;
   try {
+    existUser = await UserModel.find({ email: req.body.email });
+
     const salt = bcrypt.genSaltSync(10);
-
-    const newUser = new UsersModel({
-      name: req.body.name,
-      email: req.body.email,
-      password: req.body.password,
-      isBlocked: false,
-    });
-
-    await newUser.save();
     const hashPassword = bcrypt.hashSync(req.body.password, salt);
+    if (existUser.length) {
+      res
+        .status(400)
+        .send({ message: "This is user is exist with this email!" });
+    } else {
+      const newUser = new UsersModel({
+        name: req.body.name,
+        email: req.body.email,
+        password: req.body.password,
+        isBlocked: false,
+      });
 
-    newUser.password = hashPassword;
-    const savedUser = await newUser.save();
+      await newUser.save();
+      const savedUser = await newUser.save();
 
-    const token = signToken(savedUser);
-    res.status(200).send({
-      token,
-      _id: savedUser._id,
-      name: savedUser.name,
-      username: savedUser.username,
-      isAdmin: savedUser.isAdmin,
-      phone: savedUser.phone,
-    });
+      newUser.password = hashPassword;
+      const token = signToken(savedUser);
+
+      res.status(200).send({
+        token,
+        savedUser,
+      });
+    }
   } catch (error) {
     let errMsg;
+
     if (error.code == 11000) {
       errMsg = Object.keys(error.keyValue)[0];
+
       if (errMsg === "phone") {
         errMsg = "Bu telefon raqamdan oldin foydalanilgan!";
       } else if (errMsg === "email") {
@@ -111,7 +118,8 @@ async function deleteUser(req, res) {
 module.exports = {
   getAllUser,
   getUserById,
-  postUser,
+  signUp,
   deleteUser,
   blockUser,
+  signIn,
 };

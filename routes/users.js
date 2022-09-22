@@ -1,10 +1,10 @@
 const express = require("express");
 const {
   getAllUser,
-  getUserById,
-  postUser,
   deleteUser,
   blockUser,
+  signIn,
+  signUp,
 } = require("../controllers/users");
 const UsersModel = require("../models/Users");
 // instance of express
@@ -12,8 +12,8 @@ const router = express();
 
 router
   .get("/users", getAllUser)
-  .get("/users/:id", getUserById)
-  .post("/users", postUser)
+  .post("/users/signUp", signUp)
+  .post("/users/signIn", signIn)
   .put("/users", blockUser)
   .delete("/users/:id", deleteUser);
 

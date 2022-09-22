@@ -8,6 +8,7 @@ const UserSchema = new mongoose.Schema({
   email: {
     type: String,
     required: true,
+    unique: [true, "You have entered existing email! Try to login!"],
   },
   password: {
     type: String,
