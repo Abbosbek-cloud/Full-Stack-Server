@@ -13,6 +13,9 @@ const UserSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
+  isBlocked: {
+    type: Boolean,
+  },
 });
 
 const UserModel = mongoose.model("Users", UserSchema);
