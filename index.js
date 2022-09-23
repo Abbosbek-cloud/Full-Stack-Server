@@ -5,11 +5,7 @@ const userRoutes = require("./routes/users");
 const dotenv = require("dotenv");
 const app = express();
 
-app.use(
-  cors({
-    origin: "http://localhost:3000",
-  })
-);
+app.use(cors({ credentials: true, origin: "*", optionSuccessStatus: 200 }));
 
 app.use(express.json());
 dotenv.config();
