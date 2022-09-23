@@ -24,6 +24,6 @@ mongoose.connect(
 
 app.use(userRoutes);
 
-app.listen(3001, () => {
-  console.log("Backend is running on port 3001");
+app.listen(8080, () => {
+  console.log("Backend is running on port 8080");
 });
