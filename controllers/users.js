@@ -4,13 +4,9 @@ const { signToken } = require("../utils/auth");
 const UserModel = require("../models/Users");
 
 async function getAllUser(req, res) {
-  UsersModel.find({}, (err, result) => {
-    if (err) {
-      res.send(err);
-    }
-
-    res.send(result);
-  });
+  const users = await UsersModel.find({});
+  console.log(users);
+  res.send(users);
 }
 
 async function getUserById(req, res) {
@@ -22,21 +18,20 @@ async function getUserById(req, res) {
 
 async function signIn(req, res) {
   if (req.body.password && req.body.email) {
-    const user = await UsersModel.findOne({});
-    if (user && user.isBlocked === false) {
+    const user = await UsersModel.findOne({}).or([{ email: req.body.email }]);
+    if (user && user.isBlocked === true) {
       res.status(400).send({
         message: "Your account is blocked",
       });
     } else {
       if (user && bcrypt.compareSync(req.body.password, user.password)) {
         const token = signToken(user);
+        let lastLog = new Date();
+        user.lastLog = lastLog;
+        user.timeStamp = user.timeStamp;
         res.send({
           token,
-          _id: user._id,
-          name: user.name,
-          username: user.username,
-          isAdmin: user.isAdmin,
-          status: user.status,
+          user,
         });
       } else {
         res.status(401).send({ message: "Email or password is incorrect!" });
@@ -54,24 +49,31 @@ async function signUp(req, res) {
   try {
     existUser = await UserModel.find({ email: req.body.email });
 
-    const salt = bcrypt.genSaltSync(10);
-    const hashPassword = bcrypt.hashSync(req.body.password, salt);
     if (existUser.length) {
       res
         .status(400)
         .send({ message: "This is user is exist with this email!" });
     } else {
+      const enteredDate = new Date();
+      const salt = bcrypt.genSaltSync(10);
+
       const newUser = new UsersModel({
         name: req.body.name,
         email: req.body.email,
         password: req.body.password,
         isBlocked: false,
+        timeStamp: enteredDate,
+        lastLog: enteredDate,
       });
 
       await newUser.save();
-      const savedUser = await newUser.save();
+
+      const hashPassword = bcrypt.hashSync(req.body.password, salt);
 
       newUser.password = hashPassword;
+
+      const savedUser = await newUser.save();
+
       const token = signToken(savedUser);
 
       res.status(200).send({

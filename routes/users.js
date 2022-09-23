@@ -1,4 +1,6 @@
 const express = require("express");
+const cors = require("cors");
+
 const {
   getAllUser,
   deleteUser,
@@ -6,14 +8,13 @@ const {
   signIn,
   signUp,
 } = require("../controllers/users");
-const UsersModel = require("../models/Users");
-// instance of express
+
 const router = express();
 
 router
   .get("/users", getAllUser)
-  .post("/users/signUp", signUp)
-  .post("/users/signIn", signIn)
+  .post("/users/signUp", cors(), signUp)
+  .post("/users/signIn", cors(), signIn)
   .put("/users", blockUser)
   .delete("/users/:id", deleteUser);
 

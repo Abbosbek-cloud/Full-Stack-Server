@@ -17,6 +17,14 @@ const UserSchema = new mongoose.Schema({
   isBlocked: {
     type: Boolean,
   },
+  timeStamp: {
+    type: String,
+    required: [true],
+  },
+  lastLog: {
+    type: String,
+    required: true,
+  },
 });
 
 const UserModel = mongoose.model("Users", UserSchema);
