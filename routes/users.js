@@ -7,15 +7,19 @@ const {
   blockUser,
   signIn,
   signUp,
+  blockMany,
+  deleteMany,
 } = require("../controllers/users");
 
 const router = express();
 
 router
   .get("/users", getAllUser)
-  .post("/users/signUp", cors(), signUp)
-  .post("/users/signIn", cors(), signIn)
+  .post("/users/signUp", signUp)
+  .post("/users/signIn", signIn)
   .put("/users", blockUser)
+  .put("/users/many", blockMany)
+  .delete("/users/many", deleteMany)
   .delete("/users/:id", deleteUser);
 
 module.exports = router;

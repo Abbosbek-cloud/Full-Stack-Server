@@ -100,6 +100,7 @@ async function signUp(req, res) {
 }
 
 async function blockUser(req, res) {
+  console.log(req.body);
   try {
     const user = await UsersModel.findById(req.body._id);
     user.isBlocked = user.isBlocked ? false : true;
@@ -117,6 +118,43 @@ async function deleteUser(req, res) {
   res.send({ message: "User deleted", data: deletedUser });
 }
 
+async function blockMany(req, res) {
+  const { users = [] } = req.body;
+  const blockedUsers = [];
+  try {
+    if (users.length) {
+      for (let i = 0; i < users.length; i++) {
+        const user = await UsersModel.findById(users[i]);
+        user.isBlocked = !user.isBlocked;
+        const editedUser = await user.save();
+        const token = signToken(editedUser);
+        blockedUsers.push({ token, editedUser });
+      }
+      res.status(200).send(blockedUsers);
+    }
+  } catch (error) {
+    res.status(400).send(error.message);
+  }
+}
+
+async function deleteMany() {
+  const { users = [] } = req.body;
+  const deletedUsers = [];
+  try {
+    if (users.length) {
+      for (let i = 0; i < users.length; i++) {
+        const deletedUser = await UsersModel.findByIdAndRemove(_id).exec();
+        deletedUsers.push(deletedUser);
+      }
+      res
+        .status(200)
+        .send({ message: "Users successfully deleted!", deletedUsers });
+    }
+  } catch (error) {
+    res.status(400).send(error.message);
+  }
+}
+
 module.exports = {
   getAllUser,
   getUserById,
@@ -124,4 +162,6 @@ module.exports = {
   deleteUser,
   blockUser,
   signIn,
+  blockMany,
+  deleteMany,
 };

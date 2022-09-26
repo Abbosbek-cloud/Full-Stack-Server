@@ -5,9 +5,9 @@ const userRoutes = require("./routes/users");
 const dotenv = require("dotenv");
 const app = express();
 
-app.use(cors({ credentials: true, origin: "*", optionSuccessStatus: 200 }));
-
+app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
+app.use(cors());
 dotenv.config();
 
 const URI = process.env.MONGO_URI;
