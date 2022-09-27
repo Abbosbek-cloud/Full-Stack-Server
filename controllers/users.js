@@ -5,7 +5,6 @@ const UserModel = require("../models/Users");
 
 async function getAllUser(req, res) {
   const users = await UsersModel.find({});
-  console.log(users);
   res.send(users);
 }
 
@@ -100,7 +99,7 @@ async function signUp(req, res) {
 }
 
 async function blockUser(req, res) {
-  console.log(req.body);
+
   try {
     const user = await UsersModel.findById(req.body._id);
     user.isBlocked = user.isBlocked ? false : true;
@@ -120,7 +119,6 @@ async function deleteUser(req, res) {
 
 async function blockMany(req, res) {
   const { users = [] } = req.body;
-  console.log("body", req.body);
   const blockedUsers = [];
   try {
     if (users.length) {
@@ -131,11 +129,9 @@ async function blockMany(req, res) {
         const token = signToken(editedUser);
         blockedUsers.push({ token, editedUser });
       }
-      console.log("worked");
       res.status(200).send(blockedUsers);
     }
   } catch (error) {
-    console.log(error);
     res.status(400).send(error.message);
   }
 }
