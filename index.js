@@ -11,6 +11,7 @@ app.use(cors());
 dotenv.config();
 
 const URI = process.env.MONGO_URI;
+const PORT = process.env.PORT || 8080;
 
 mongoose.connect(
   URI,
@@ -24,6 +25,6 @@ mongoose.connect(
 
 app.use(userRoutes);
 
-app.listen(8080, () => {
+app.listen(PORT, () => {
   console.log("Backend is running on port 8080");
 });
