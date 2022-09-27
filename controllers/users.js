@@ -120,6 +120,7 @@ async function deleteUser(req, res) {
 
 async function blockMany(req, res) {
   const { users = [] } = req.body;
+  console.log("body", req.body);
   const blockedUsers = [];
   try {
     if (users.length) {
@@ -130,20 +131,22 @@ async function blockMany(req, res) {
         const token = signToken(editedUser);
         blockedUsers.push({ token, editedUser });
       }
+      console.log("worked");
       res.status(200).send(blockedUsers);
     }
   } catch (error) {
+    console.log(error);
     res.status(400).send(error.message);
   }
 }
 
-async function deleteMany() {
+async function deleteMany(req, res) {
   const { users = [] } = req.body;
   const deletedUsers = [];
   try {
     if (users.length) {
       for (let i = 0; i < users.length; i++) {
-        const deletedUser = await UsersModel.findByIdAndRemove(_id).exec();
+        const deletedUser = await UsersModel.findByIdAndRemove(users[i]).exec();
         deletedUsers.push(deletedUser);
       }
       res
